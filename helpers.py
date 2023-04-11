@@ -1,12 +1,11 @@
 import time
 
 import channels
+import lists
+import macros
 import patterns
 import transport
 import ui
-
-import lists
-import macros
 
 
 def menuPause(seconds=0):
@@ -66,6 +65,7 @@ def handle_knob(first, second, windows=None):
 
     return callback
 
+
 def handle_knob_no_event(first, second, windows=None):
     def callback(e):
         focused_id = ui.getFocusedFormID()
@@ -76,6 +76,7 @@ def handle_knob_no_event(first, second, windows=None):
                 second()
 
     return callback
+
 
 def transportTo(key, num=1):
     def callback(e):

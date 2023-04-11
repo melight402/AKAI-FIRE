@@ -1,7 +1,5 @@
 # name=Beat Step Arturia My
 
-import ui
-
 import browserMy
 import channel_reck
 import common
@@ -10,6 +8,7 @@ import mixerMy
 import piano_roll
 import playlistMy
 import plugin_general
+import ui
 
 handlers = {
     lists.windows['mixer']: mixerMy.handler,

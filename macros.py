@@ -1,7 +1,6 @@
 import channels
-import ui
-
 import helpers
+import ui
 
 
 def TransposeOctaveUp(e):
@@ -44,7 +43,7 @@ def Articulate():
     helpers.NavigateFLMenu(',R,DR,DDDE,')
 
 
-def deleteChannel():
+def deleteChannel(e):
     if ui.isInPopupMenu():
         ui.closeActivePopupMenu()
 
