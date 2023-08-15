@@ -4,8 +4,9 @@ windows = {
     'playlist': 2,
     'piano roll': 3,
     'browser': 4,
-    'plugins': 5,
-    'plugin': 6
+    'plugin': 5,
+    'pluginEffect': 6,
+    'pluginGenerator': 7
 }
 
 f_keys = {

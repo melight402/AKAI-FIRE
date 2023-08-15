@@ -1,84 +1,78 @@
 import channels
-import helpers
 import ui
+import transport
+
+import helpers
 
 
 def TransposeOctaveUp(e):
     helpers.NavigateFLMenu(',RR,DDDDDDDDDDDE')
+    e.handled = True
 
 
 def TransposeOctaveDown(e):
     helpers.NavigateFLMenu(',RR,DDDDDDDDDDDDE')
+    e.handled = True
 
 
 def TransposeToneUp(e):
     helpers.NavigateFLMenu(',RR,DDDDDDDDDE')
+    e.handled = True
 
 
 def TransposeToneDown(e):
     helpers.NavigateFLMenu(',RR,DDDDDDDDDDE')
-
-
-def QuickQuantize():
-    channels.quickQuantize(channels.channelNumber())
+    e.handled = True
 
 
 def ShowScriptOutputWindow(e):
-    print('script')
     ui.showWindow(1)  # make CR the active window, so it pulls up the main menu
     helpers.NavigateFLMenu(',LLLLDDDDDDDDDDE')  # series of keys to pass
+    e.handled = True
 
 
-def ShowProject():
-    ui.showWindow(1)  # make CR the active window, so it pulls up the main menu
-    helpers.NavigateFLMenu(',LLL,LUUUUUELL')  # series of keys to pass
-
-
-def ViewArrangeIntoWorkSpace():
-    ui.showWindow(1)  # make CR the active window, so it pulls up the main menu
-    helpers.NavigateFLMenu(',LLLLDDDDDDDDDDDDDDDDDDRDE')  # series of keys to pass
-
-
-def Articulate():
+def Articulate(e):
     helpers.NavigateFLMenu(',R,DR,DDDE,')
-
-
-def deleteChannel(e):
-    if ui.isInPopupMenu():
-        ui.closeActivePopupMenu()
-
-    ui.showWindow(1)
-    channels.showCSForm(1)
-    # helpers.NavigateFLMenu(',DDE')
+    e.handled = True
 
 
 def insertSpacePlaylist(e):
     helpers.NavigateFLMenu(',D,R,U,R,DDDDDDDDDDDDDDDDE')
+    e.handled = True
 
 
 def deleteSpacePlaylist(e):
     helpers.NavigateFLMenu(',D,R,U,R,DDDDDDDDDDDDDDDDDE')
+    e.handled = True
 
 
 def insertSpacePianoRoll(e):
     helpers.NavigateFLMenu(',RR,DDDDDDDDDDDDDDDDDDDE')
+    e.handled = True
 
 
 def deleteSpacePianoRoll(e):
     helpers.NavigateFLMenu(',RR,DDDDDDDDDDDDDDDDDDDDE')
+    e.handled = True
 
 
 def quick_legato(e):
+    ui.showWindow(3)
     helpers.NavigateFLMenu(',R,D,R,DDE')
+    e.handled = True
 
 
 def quick_staccato(e):
+    ui.showWindow(3)
     helpers.NavigateFLMenu(',R,R,DDDDDDDDDDDDDE')
+    e.handled = True
 
 
 def select_all(e):
     helpers.NavigateFLMenu(',R,D,D,D,D,D,R,DE')
+    e.handled = True
 
 
 def invert_selection(e):
     helpers.NavigateFLMenu(',R,D,D,D,D,D,R,DDDDDDDDDE')
+    e.handled = True

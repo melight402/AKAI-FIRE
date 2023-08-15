@@ -1,8 +1,9 @@
 import general
-import helpers
-import macros
 import transport
 import ui
+
+import helpers
+import macros
 
 nt = ui.navigateBrowserTabs
 
@@ -26,41 +27,56 @@ commonKeys = [
 ]
 
 buttonHandlers = [
+    # block 1
     helpers.transportTo(80),  # enter/accept
-    helpers.open_plugin,
-    helpers.transportTo(33),
-    helpers.transportTo(35),
-    helpers.transportTo(36),
-    helpers.transportTo(61),
-    helpers.temp,  # REWIND
-    helpers.temp,  # 8 FORWARD
     helpers.back_close,
     macros.ShowScriptOutputWindow,
-    helpers.q_quantize,
+    helpers.transportTo(50),  # Cut
+
+    # block 2
     helpers.transportTo(51),  # Copy
     helpers.transportTo(52),  # Paste
-    helpers.transportTo(50),  # Cut
+    helpers.temp,
+    helpers.temp,
+
+
+    # block 3
+    helpers.temp,
+    helpers.temp,
+    helpers.temp,
+    helpers.temp,
+
+    # block 4
+    helpers.transportTo(63),
+    helpers.transportTo(61),
     helpers.event_wrap(general.undo),
     helpers.closeAll,
+
+
 ]
 
 knobHandlers = [
+    # block 1
     helpers.windows_switch,
+    helpers.handle_knob(helpers.prev_pattern, helpers.next_pattern),
+    helpers.snap_scroll,
+    helpers.tempo_scroll,
+    # block 2
     helpers.handle_knob_as_toggle(helpers.rec_toggle, transport.isRecording),
-    helpers.transportTo(90, 2),  # context menu
     helpers.handle_knob_as_toggle(transport.setLoopMode, transport.getLoopMode),
     helpers.handle_knob_as_toggle(helpers.metronome_toggle, ui.isMetronomeEnabled),
     helpers.handle_knob_as_toggle(helpers.count_toggle, ui.isPrecountEnabled),
-    helpers.handle_knob_args(nt, nt, 43, 42),  # browser tabs ---- 8
-    helpers.handle_knob(helpers.prev_pattern, helpers.next_pattern),
-    helpers.transpose_octave,
-    helpers.transpose_tone,
-    helpers.handle_knob(macros.quick_legato, macros.quick_staccato, [3]),
-    helpers.handle_knob(macros.select_all, macros.invert_selection, [3]),
-    helpers.ins_del_space,
-    helpers.playlist_movement,
-    helpers.tempo_scroll,
-    helpers.snap_scroll,
+    # block 3
+    helpers.temp,
+    helpers.temp,
+    helpers.temp,
+    helpers.temp,
+    # block 4
+    helpers.temp,
+    helpers.temp,
+    helpers.temp,
+    helpers.temp,
+
 ]
 
 
@@ -78,7 +94,7 @@ def handleKnob(e):
             knobHandlers[i](e)
 
 
-def handleCommon(e):
+def handleButton(e):
     for i, key in enumerate(commonKeys):
         if e.data1 == key and e.status == 128:
             buttonHandlers[i](e)

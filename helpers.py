@@ -1,11 +1,14 @@
 import time
 
 import channels
-import lists
-import macros
+import mixer
 import patterns
+import playlist
 import transport
 import ui
+
+import lists
+import macros
 
 
 def menuPause(seconds=0):
@@ -35,11 +38,13 @@ def NavigateFLMenu(cmd_string='', alt_menu=False):
 
 def temp(e):
     print('temp', e)
+    e.handled = True
 
 
 def event_wrap(func):
     def callback(e):
-        return func()
+        func()
+        e.handled = True
 
     return callback
 
@@ -48,8 +53,10 @@ def handle_knob_args(first, second, arg1, arg2):
     def callback(e):
         if e.data2 >= 64:
             first(arg1)
+            e.handled = True
         else:
             second(arg2)
+            e.handled = True
 
     return callback
 
@@ -60,8 +67,10 @@ def handle_knob(first, second, windows=None):
         if windows is None or not windows.index(focused_id) == -1:
             if e.data2 >= 64:
                 first(e)
+                e.handled = True
             else:
                 second(e)
+                e.handled = True
 
     return callback
 
@@ -72,8 +81,10 @@ def handle_knob_no_event(first, second, windows=None):
         if windows is None or not windows.index(focused_id) == -1:
             if e.data2 >= 64:
                 first()
+                e.handled = True
             else:
                 second()
+                e.handled = True
 
     return callback
 
@@ -81,6 +92,7 @@ def handle_knob_no_event(first, second, windows=None):
 def transportTo(key, num=1):
     def callback(e):
         transport.globalTransport(key, num)
+        e.handled = True
 
     return callback
 
@@ -90,8 +102,10 @@ def handle_knob_as_toggle(toggle, condition):
         cond = condition()
         if e.data2 >= 64 and not cond:
             toggle()
+            e.handled = True
         elif e.data2 <= 64 and cond:
             toggle()
+            e.handled = True
 
     return callback
 
@@ -100,21 +114,20 @@ def rec_toggle():
     transport.globalTransport(12, 2)
 
 
-snaps = [14, 13, 9, 8, 5, 3, 1]
+snaps = [14, 13, 12, 10, 9, 8, 7, 5, 4,  3]
 
 
 def snap_scroll(e):
     current = ui.getSnapMode()
     curr_index = snaps.index(current)
-    print('current', current)
-    print('index', curr_index)
-    print('next step', snaps[curr_index + 1])
     if e.data2 >= 64:
-        if curr_index < 5:
+        if curr_index < 9:
             ui.setSnapMode(snaps[curr_index + 1])
+            e.handled = True
     else:
         if curr_index > 0:
             ui.setSnapMode(snaps[curr_index - 1])
+            e.handled = True
 
 
 def count_toggle():
@@ -128,14 +141,17 @@ def metronome_toggle():
 def tempo_scroll(e):
     if e.data2 >= 64:
         transport.globalTransport(105, 10)
+        e.handled = True
     else:
         transport.globalTransport(105, -10)
+        e.handled = True
 
 
 def next_pattern(e):
     current = patterns.patternNumber()
     if current < 40:
         patterns.jumpToPattern(current + 1)
+        e.handled = True
 
 
 def ins_del_space(e):
@@ -150,15 +166,16 @@ def ins_del_space(e):
             macros.deleteSpacePlaylist(e)
         elif focused_id == 3:
             macros.deleteSpacePianoRoll(e)
+    e.handled = True
 
 
 def transpose_octave(e):
-    focused_id = ui.getFocusedFormID()
-    if focused_id == 3:
-        if e.data2 >= 64:
-            macros.TransposeOctaveUp(e)
-        else:
-            macros.TransposeOctaveDown(e)
+    ui.showWindow(3)
+    if e.data2 >= 64:
+        macros.TransposeOctaveUp(e)
+    else:
+        macros.TransposeOctaveDown(e)
+    e.handled = True
 
 
 channels_first = True
@@ -184,37 +201,75 @@ def open_plugin(e):
         channels.showCSForm(channels.channelNumber(), 0)
         ui.showWindow(0)
         ui.showWindow(1)
+    e.handled = True
 
 
 def transpose_tone(e):
-    focused_id = ui.getFocusedFormID()
-    if focused_id == 3:
-        if e.data2 >= 64:
-            macros.TransposeToneUp(e)
-        else:
-            macros.TransposeToneDown(e)
+    ui.showWindow(3)
+    if e.data2 >= 64:
+        macros.TransposeToneUp(e)
+    else:
+        macros.TransposeToneDown(e)
+    e.handled = True
 
 
 def back_close(e):
     focused_id = ui.getFocusedFormID()
+    id_focused_plugin = ui.getFocused(lists.windows['plugin'])
     if ui.isInPopupMenu():
         ui.closeActivePopupMenu()
+    elif id_focused_plugin == 1:
+        transport.globalTransport(81, 81)
     elif focused_id == 4:
         ui.left()
     else:
         transport.globalTransport(81, 81)
+    e.handled = True
 
 
 def windows_switch(e):
-    focused_id = ui.getFocusedFormID()
-    if e.data2 >= 64:
-        if not focused_id == 4:
-            ui.showWindow(4)
-        else:
+    windowNumber = ui.getFocusedFormID()
+    id_focused_plugin = ui.getFocused(lists.windows['plugin'])
+
+    print("wind", id_focused_plugin)
+    if e.data2 <= 64:
+        if id_focused_plugin == 1:
+            transport.globalTransport(81, 81)
+            ui.showWindow(2)
+        elif windowNumber == 3:
+            channels.showCSForm(channels.channelNumber(), 1)
+            e.handled = True
             return
-    elif e.data2 <= 64 and not focused_id == 2:
-        ui.hideWindow(4)
-        ui.showWindow(2)
+        elif windowNumber == 2:
+            ui.showWindow(4)
+            e.handled = True
+            return
+        else:
+            ui.showWindow(4)
+            e.handled = True
+            return
+
+    elif e.data2 >= 64:
+        if id_focused_plugin == 1:
+            transport.globalTransport(81, 81)
+            ui.hideWindow(2)
+            ui.showWindow(3)
+            e.handled = True
+            return
+        if windowNumber == 4:
+            ui.hideWindow(4)
+            ui.showWindow(2)
+            e.handled = True
+            return
+        elif windowNumber == 2:
+            channels.showCSForm(channels.channelNumber(), 1)
+            e.handled = True
+            return
+        else:
+            ui.hideWindow(2)
+            ui.showWindow(3)
+            e.handled = True
+            return
 
 
 def playlist_movement(e):
@@ -227,12 +282,14 @@ def playlist_movement(e):
         transport.rewind(2)
         time.sleep(step)
         transport.rewind(0)
+    e.handled = True
 
 
 def prev_pattern(e):
     current = patterns.patternNumber()
     if current > 1:
         patterns.jumpToPattern(current - 1)
+    e.handled = True
 
 
 def openBrowser(e):
@@ -242,12 +299,14 @@ def openBrowser(e):
     else:
         ui.showWindow(4)
         ui.setFocused(4)
+    e.handled = True
 
 
 def closeAll(e):
     if ui.isInPopupMenu():
         ui.closeActivePopupMenu()
     transport.globalTransport(lists.f_keys['F12'], 1)
+    e.handled = True
 
 
 def checkIfBrowser(func_browser, func_not):
@@ -260,3 +319,29 @@ def checkIfBrowser(func_browser, func_not):
 
 def q_quantize(e):
     channels.quickQuantize(channels.channelNumber(), 0)
+    e.handled = True
+
+
+def soloTrack(e):
+    mixer.soloTrack(mixer.trackNumber())
+    e.handled = True
+
+
+def muteTrack(e):
+    mixer.muteTrack(mixer.trackNumber())
+    e.handled = True
+
+
+def revPolarTrack(e):
+    mixer.revTrackPolarity(mixer.trackNumber())
+    e.handled = True
+
+
+def soloChannel(e):
+    channels.soloChannel(channels.selectedChannel())
+    e.handled = True
+
+
+def muteChannel(e):
+    channels.muteChannel(channels.selectedChannel())
+    e.handled = True

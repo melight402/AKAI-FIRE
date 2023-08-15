@@ -1,5 +1,7 @@
 # name=Beat Step Arturia My
 
+import ui
+
 import browserMy
 import channel_reck
 import common
@@ -8,7 +10,6 @@ import mixerMy
 import piano_roll
 import playlistMy
 import plugin_general
-import ui
 
 handlers = {
     lists.windows['mixer']: mixerMy.handler,
@@ -16,29 +17,33 @@ handlers = {
     lists.windows['playlist']: playlistMy.handler,
     lists.windows['piano roll']: piano_roll.handler,
     lists.windows['browser']: browserMy.handler,
-    lists.windows['plugin']: plugin_general.handler,
 }
 
 
 # event.handled = True
 def route_to(e):
     print(e.data1, e.data2, e.status)
-
-    if e.status == 176:
+    if e.status == 176:  # knobs
         common.handleKnob(e)
         id_focused = ui.getFocusedFormID()
-        if id_focused <= 6:
+        id_focused_plugin = ui.getFocused(lists.windows['plugin'])
+        if id_focused_plugin == 1:
+            plugin_general.handler(e)
+        elif id_focused <= 5:
             handlers[id_focused](e)
         else:
-            print('else knob', e.data1, e.data2, e.status)
+            print('else knob', id_focused)
 
-    elif e.status == 128:
-        common.handleCommon(e)
+    elif e.status == 128:  # buttons
+        common.handleButton(e)
         id_focused = ui.getFocusedFormID()
-        if id_focused <= 6:
+        id_focused_plugin = ui.getFocused(lists.windows['plugin'])
+        if id_focused_plugin == 1:
+            plugin_general.handler(e)
+        elif id_focused <= 5:
             handlers[id_focused](e)
         else:
-            print('else button', e.data1, e.data2, e.status)
+            print('else button', id_focused)
 
 
 def OnMidiMsg(event):
